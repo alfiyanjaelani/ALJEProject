@@ -1,28 +1,29 @@
 ﻿using ALJEproject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
+using ALJEproject.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALJEproject.Controllers
 {
-    public class HomeController : Controller
+    public class UserController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<UserController> _logger;
+        private readonly ALJEprojectDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        // Konstruktor yang menggabungkan kedua dependensi
+        public UserController(ALJEprojectDbContext context, ILogger<UserController> logger)
         {
+            _context = context;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            TempData["Message"] = "Welcome to the Home Page!";
-            return View();
+            var users = await _context.Users.ToListAsync();
+            return View(users);
         }
 
         public IActionResult Privacy()

@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Users Page";
+}
+@model IEnumerable<User>
+
+<h2>User List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>UserId</th>
+            <th>UserName</th>
+            <th>FullName</th>
+            <th>EmailAddress</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.UserName</td>
+                <td>@user.FullName</td>
+                <td>@user.EmailAddress</td>
+                <td>@user.Phone</td>
+            </tr>
+        }
+    </tbody>
+</table>
