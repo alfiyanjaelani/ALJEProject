@@ -21,7 +21,7 @@ namespace ALJEproject.Controllers
 
         public IActionResult Index()
         {
-            TempData["Message"] = "Welcome to the Home Page!";
+            
             return View();
         }
 

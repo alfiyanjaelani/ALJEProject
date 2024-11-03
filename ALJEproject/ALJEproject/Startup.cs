@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ALJEproject.Data;
+using ALJEproject.Services.Interfaces;
+using ALJEproject.Services.Implementations;
 
 namespace ALJEproject
 {
@@ -30,6 +32,15 @@ namespace ALJEproject
 
             // Add MVC services, including View features
             services.AddControllersWithViews(); // This includes TempData services
+
+            // Tambahkan konfigurasi session
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Atur waktu timeout session
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true; // Diperlukan jika ingin session digunakan tanpa persetujuan cookie
+            });
+            services.AddScoped<IUserService, UserService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -48,8 +59,10 @@ namespace ALJEproject
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
