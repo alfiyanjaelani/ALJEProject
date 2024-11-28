@@ -7,21 +7,25 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ALJEproject.Services.Interfaces;
 
 namespace ALJEproject.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IUserService userService, ILogger<HomeController> logger)
         {
             _logger = logger;
+            _userService = userService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            
+            var menus = await _userService.GetActiveMenusAsync();
+            ViewBag.Menus = menus;
             return View();
         }
 

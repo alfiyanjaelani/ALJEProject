@@ -11,6 +11,7 @@ using ALJEproject.Services.Interfaces;
 using System.Collections.Generic;
 using ClosedXML.Excel;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace ALJEproject.Controllers
 {
@@ -30,6 +31,8 @@ namespace ALJEproject.Controllers
 
         public async Task<IActionResult> Index(string search, int page = 1, int pageSize = 10)
         {
+            var menus = await _userService.GetActiveMenusAsync();
+            ViewBag.Menus = menus;
             IEnumerable<RoleView> roles; // Assuming you have a RoleViewModel
             int totalRoles; // Declare a variable for total role count
 
@@ -71,8 +74,9 @@ namespace ALJEproject.Controllers
         {
             if (ModelState.IsValid)
             {
+                string createdBy = HttpContext.Session.GetString("Username");
                 role.CreatedDate = DateTime.Now;
-                role.CreatedBy = User.Identity.Name; // Atur CreatedBy dari user yang sedang login
+                role.CreatedBy = createdBy; // Atur CreatedBy dari user yang sedang login
                 _context.Roles.Add(role);
                 _context.SaveChanges();
                 return Json(new { success = true });
@@ -101,8 +105,9 @@ namespace ALJEproject.Controllers
             {
                 try
                 {
+                    string updateBy = HttpContext.Session.GetString("Username");
                     role.UpdatedDate = DateTime.Now;
-                    role.UpdatedBy = User.Identity.Name; // Atur UpdatedBy dari user yang sedang login
+                    role.UpdatedBy = updateBy; // Atur UpdatedBy dari user yang sedang login
                     _context.Update(role);
                     _context.SaveChanges();
                     _logger.LogInformation("Role with ID {RoleId} updated successfully.", role.RoleID);
@@ -147,23 +152,27 @@ namespace ALJEproject.Controllers
 
         public IActionResult ExportToExcel()
         {
-            // Assuming you have a method to get user data
+            // Assuming you have a method to get option data
             var roles = _context.Roles.ToList();
 
             using (var workbook = new XLWorkbook())
             {
-                var worksheet = workbook.Worksheets.Add("Roles");
+                var worksheet = workbook.Worksheets.Add("roles");
                 worksheet.Cell(1, 1).Value = "RoleID";
-                worksheet.Cell(1, 2).Value = "Role Name";
+                worksheet.Cell(1, 2).Value = "RoleName";
                 worksheet.Cell(1, 3).Value = "CreatedBy";
-                worksheet.Cell(1, 4).Value = "UpdatedBy";                
+                worksheet.Cell(1, 4).Value = "CreatedDate";
+                worksheet.Cell(1, 5).Value = "UpdatedDate";
+                worksheet.Cell(1, 6).Value = "UpdatedBy";
 
                 for (int i = 0; i < roles.Count; i++)
                 {
                     worksheet.Cell(i + 2, 1).Value = roles[i].RoleID;
                     worksheet.Cell(i + 2, 2).Value = roles[i].RoleName;
                     worksheet.Cell(i + 2, 3).Value = roles[i].CreatedBy;
-                    worksheet.Cell(i + 2, 4).Value = roles[i].UpdatedBy;                    
+                    worksheet.Cell(i + 2, 4).Value = roles[i].CreatedDate;
+                    worksheet.Cell(i + 2, 5).Value = roles[i].UpdatedDate;
+                    worksheet.Cell(i + 2, 6).Value = roles[i].UpdatedBy;
                 }
 
                 using (var stream = new MemoryStream())

@@ -8,6 +8,7 @@ using ALJEproject.Data;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace ALJEproject.Controllers
 {
@@ -37,30 +38,64 @@ namespace ALJEproject.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel vm)
         {
+            // Validasi input
             if (string.IsNullOrEmpty(vm.Username) || string.IsNullOrEmpty(vm.Password))
             {
                 ModelState.AddModelError("", "Username and password are required.");
-                return View();
+                return View(vm);
             }
 
-            if (SignInMethod(vm.Username, vm.Password))
+            try
             {
-                // Set session untuk username dan role
-                HttpContext.Session.SetString("Username", vm.Username);
-
-                // Misalkan Anda mendapatkan role dari database berdasarkan username
-                var user = _context.UserRoles.SingleOrDefault(u => u.UserName == vm.Username);
-                if (user != null)
+                // Metode untuk validasi login
+                if (SignInMethod(vm.Username, vm.Password))
                 {
-                    HttpContext.Session.SetString("Role", user.RoleName);
-                }
+                    // Ambil data user dari database
+                    var user = _context.UserRoles
+                        .SingleOrDefault(u => u.UserName == vm.Username);
 
-                return RedirectToAction("Index", "Home");
+                    if (user != null)
+                    {
+                        // Set session untuk Username dan Role
+                        HttpContext.Session.SetString("Username", user.UserName);
+                        HttpContext.Session.SetString("Role", user.RoleName);
+
+                        // Simpan hak akses menu berdasarkan Role ke dalam Session
+                        var menuAccess = _context.UserAccessesView
+                            .Where(ma => ma.RoleName == user.RoleName)
+                            .Select(ma => new
+                            {
+                                ma.MenuName,
+                                ma.Views,
+                                ma.Inserts,
+                                ma.Edits,
+                                ma.Deletes
+                            })
+                            .ToList();
+
+                        HttpContext.Session.Set("MenuAccess", System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(menuAccess));
+
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    ModelState.AddModelError("", "User role data not found.");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid username or password.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error (misalkan dengan ILogger)
+                Console.WriteLine($"Login error: {ex.Message}");
+                ModelState.AddModelError("", "An unexpected error occurred. Please try again later.");
             }
 
-            ModelState.AddModelError("", "Invalid username or password.");
-            return View("Login");
+            // Jika gagal login
+            return View(vm);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

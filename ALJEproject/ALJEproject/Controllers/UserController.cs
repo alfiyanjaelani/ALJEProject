@@ -35,6 +35,8 @@ namespace ALJEproject.Controllers
 
         public async Task<IActionResult> Index(string search, int page = 1, int pageSize = 10)
         {
+            var menus = await _userService.GetActiveMenusAsync();
+            ViewBag.Menus = menus;
             IEnumerable<UserRoleView> users;
             int totalUsers; // Declare a variable for total user count
 

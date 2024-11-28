@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -35,5 +36,11 @@ namespace ALJEproject.Models
         public string MenuURL { get; set; } // New Field
 
         public int MenuOrder { get; set; }
+
+        public int? ParentMenuID { get; set; }
+
+        // Relasi Parent-Child
+        public virtual Menu ParentMenu { get; set; }
+        public virtual ICollection<Menu> SubMenus { get; set; } = new List<Menu>();
     }
 }

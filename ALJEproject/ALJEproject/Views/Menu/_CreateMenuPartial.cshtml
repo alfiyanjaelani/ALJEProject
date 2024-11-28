@@ -20,6 +20,14 @@
                         <span asp-validation-for="MenuName" class="text-danger"></span>
                     </div>
                     <div class="form-group">
+                        <label asp-for="ParentMenuID" class="control-label">Parent Menu</label>
+                        <select asp-for="ParentMenuID" class="form-control" asp-items="ViewBag.ParentMenus">
+                            <option value="">-- Select Parent Menu --</option>
+                        </select>
+                        <span asp-validation-for="ParentMenuID" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
                         <label asp-for="ControllerName" class="control-label"></label>
                         <input asp-for="ControllerName" class="form-control" />
                         <span asp-validation-for="ControllerName" class="text-danger"></span>

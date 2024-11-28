@@ -34,7 +34,12 @@ namespace ALJEproject.Data
                .HasNoKey()  // Specify that this entity has no primary key
                .ToView("vw_UserAccess");  // Map to the view name in the database
 
-            
+            modelBuilder.Entity<Menu>()
+               .HasOne(m => m.ParentMenu)
+               .WithMany(m => m.SubMenus)
+               .HasForeignKey(m => m.ParentMenuID);
+
+
         }
     }
 }

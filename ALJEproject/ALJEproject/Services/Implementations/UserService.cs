@@ -271,6 +271,262 @@ namespace ALJEproject.Services.Implementations
             return _context.Roles.Count();
         }
 
+        // Option-related methods in UserService
+        public List<Option> SearchOptions(string search, int page, int pageSize)
+        {
+            // Start building the query
+            var query = _context.Options.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower(); // Convert the search term to lowercase
+
+                query = query.Where(o => o.OptionsID.ToString().ToLower().Contains(searchLower) ||
+                                         o.FieldName.ToLower().Contains(searchLower) ||
+                                         o.ShortName.ToLower().Contains(searchLower) ||
+                                         o.FieldValue.ToLower().Contains(searchLower));
+
+            }
+
+            // Perform paging and select the desired fields
+            var options = query.OrderBy(o => o.OptionsID)
+                               .Skip((page - 1) * pageSize)
+                               .Take(pageSize)
+                               .Select(o => new Option
+                               {
+                                   OptionsID = o.OptionsID,
+                                   FieldName = o.FieldName,
+                                   FieldValue = o.FieldValue,
+                                   LongName = o.LongName,
+                                   ShortName = o.ShortName,
+                                   CreatedBy = o.CreatedBy,
+                                   CreatedDate = o.CreatedDate,
+                                   UpdatedBy = o.UpdatedBy,
+                                   UpdatedDate = o.UpdatedDate
+                               })
+                               .ToList();
+
+            return options; // Return the list of options
+        }
+
+        public int GetTotalOptionsCount(string search = null)
+        {
+            var query = _context.Options.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                query = query.Where(o => o.OptionsID.ToString().ToLower().Contains(searchLower) ||
+                                         o.FieldName.ToLower().Contains(searchLower) ||
+                                         o.ShortName.ToLower().Contains(searchLower) ||
+                                         o.FieldValue.ToLower().Contains(searchLower));
+            }
+
+            return query.Count(); // Returns the total count based on the current query
+        }
+
+        public IEnumerable<Option> GetPaginatedOptions(int page, int pageSize)
+        {
+            return _context.Options
+                .OrderBy(o => o.OptionsID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new Option
+                {
+                    OptionsID = o.OptionsID,
+                    FieldName = o.FieldName,
+                    FieldValue = o.FieldValue,
+                    LongName = o.LongName,
+                    ShortName = o.ShortName,
+                    CreatedBy = o.CreatedBy,
+                    CreatedDate = o.CreatedDate,
+                    UpdatedBy = o.UpdatedBy,
+                    UpdatedDate = o.UpdatedDate
+                })
+                .ToList();
+        }
+
+        public int GetTotalOptionsCount()
+        {
+            return _context.Options.Count();
+        }
+
+        // Menu-related methods in UserService
+        public List<Menu> SearchMenus(string search, int page, int pageSize)
+        {
+            var query = _context.Menus.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                query = query.Where(m => m.MenuID.ToString().ToLower().Contains(searchLower) ||
+                                         m.ControllerName.ToLower().Contains(searchLower) ||
+                                         m.MenuName.ToLower().Contains(searchLower) ||
+                                         m.MenuDesc.ToLower().Contains(searchLower));
+            }
+
+            var menus = query.OrderBy(m => m.MenuID)
+                             .Skip((page - 1) * pageSize)
+                             .Take(pageSize)
+                             .Select(m => new Menu
+                             {
+                                 MenuID = m.MenuID,
+                                 ControllerName = m.ControllerName,
+                                 MenuName = m.MenuName,
+                                 MenuDesc = m.MenuDesc,
+                                 CreatedBy = m.CreatedBy,
+                                 CreatedDate = m.CreatedDate,
+                                 UpdatedBy = m.UpdatedBy,
+                                 UpdatedDate = m.UpdatedDate,
+                                 Active = m.Active,
+                                 MenuURL = m.MenuURL,
+                                 MenuOrder = m.MenuOrder
+                             })
+                             .ToList();
+
+            return menus;
+        }
+
+        public int GetTotalMenusCount(string search = null)
+        {
+            var query = _context.Menus.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                query = query.Where(m => m.MenuID.ToString().ToLower().Contains(searchLower) ||
+                                         m.ControllerName.ToLower().Contains(searchLower) ||
+                                         m.MenuName.ToLower().Contains(searchLower) ||
+                                         m.MenuDesc.ToLower().Contains(searchLower));
+            }
+
+            return query.Count();
+        }
+
+        public IEnumerable<Menu> GetPaginatedMenus(int page, int pageSize)
+        {
+            return _context.Menus
+                .OrderBy(m => m.MenuID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(m => new Menu
+                {
+                    MenuID = m.MenuID,
+                    ControllerName = m.ControllerName,
+                    MenuName = m.MenuName,
+                    MenuDesc = m.MenuDesc,
+                    CreatedBy = m.CreatedBy,
+                    CreatedDate = m.CreatedDate,
+                    UpdatedBy = m.UpdatedBy,
+                    UpdatedDate = m.UpdatedDate,
+                    Active = m.Active,
+                    MenuURL = m.MenuURL,
+                    MenuOrder = m.MenuOrder
+                })
+                .ToList();
+        }
+
+        public int GetTotalMenusCount()
+        {
+            return _context.Menus.Count();
+        }
+
+        //UserAccess
+        public List<UserAccessView> SearchUserAccesses(string search, int page, int pageSize)
+        {
+            var query = _context.UserAccessesView.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                query = query.Where(ua => ua.UserAccessID.ToString().ToLower().Contains(searchLower) ||
+                                          ua.RoleName.ToLower().Contains(searchLower) ||
+                                          ua.MenuName.ToLower().Contains(searchLower) ||
+                                          ua.CreatedBy.ToLower().Contains(searchLower));
+            }
+
+            var userAccesses = query.OrderBy(ua => ua.UserAccessID)
+                                     .Skip((page - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .Select(ua => new UserAccessView
+                                     {
+                                         UserAccessID = ua.UserAccessID,
+                                         RoleID = ua.RoleID,
+                                         RoleName = ua.RoleName,
+                                         MenuID = ua.MenuID,
+                                         MenuName = ua.MenuName,
+                                         Views = ua.Views,
+                                         Inserts = ua.Inserts,
+                                         Edits = ua.Edits,
+                                         Deletes = ua.Deletes,
+                                         CreatedBy = ua.CreatedBy,
+                                         CreatedDate = ua.CreatedDate,
+                                         UpdatedBy = ua.UpdatedBy,
+                                         UpdatedDate = ua.UpdatedDate
+                                     })
+                                     .ToList();
+
+            return userAccesses;
+        }
+
+        public int GetTotalUserAccessesCount(string search = null)
+        {
+            var query = _context.UserAccessesView.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                query = query.Where(ua => ua.UserAccessID.ToString().ToLower().Contains(searchLower) ||
+                                          ua.RoleName.ToLower().Contains(searchLower) ||
+                                          ua.MenuName.ToLower().Contains(searchLower) ||
+                                          ua.CreatedBy.ToLower().Contains(searchLower));
+            }
+
+            return query.Count();
+        }
+
+        public IEnumerable<UserAccessView> GetPaginatedUserAccesses(int page, int pageSize)
+        {
+            return _context.UserAccessesView
+                .OrderBy(ua => ua.UserAccessID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(ua => new UserAccessView
+                {
+                    UserAccessID = ua.UserAccessID,
+                    RoleID = ua.RoleID,
+                    RoleName = ua.RoleName,
+                    MenuID = ua.MenuID,
+                    MenuName = ua.MenuName,
+                    Views = ua.Views,
+                    Inserts = ua.Inserts,
+                    Edits = ua.Edits,
+                    Deletes = ua.Deletes,
+                    CreatedBy = ua.CreatedBy,
+                    CreatedDate = ua.CreatedDate,
+                    UpdatedBy = ua.UpdatedBy,
+                    UpdatedDate = ua.UpdatedDate
+                })
+                .ToList();
+        }
+
+        public int GetTotalUserAccessesCount()
+        {
+            return _context.UserAccesses.Count();
+        }
+
+        public async Task<List<Menu>> GetActiveMenusAsync()
+        {
+            return await _context.Menus
+         .Where(m => m.Active && m.ParentMenuID == null) // Ambil root menu (tidak memiliki parent)
+         .Include(m => m.SubMenus) // Sertakan submenu
+         .OrderBy(m => m.MenuOrder)
+         .ToListAsync();
+        }
     }
 }

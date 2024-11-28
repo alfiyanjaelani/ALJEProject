@@ -27,6 +27,27 @@ namespace ALJEproject.Services.Interfaces
         IEnumerable<RoleView> GetPaginatedRoles(int page, int pageSize);
         int GetTotalRolesCount();
 
+        // Option-related methods
+        List<Option> SearchOptions(string search, int page, int pageSize);
+        int GetTotalOptionsCount(string search);
+        IEnumerable<Option> GetPaginatedOptions(int page, int pageSize);
+        int GetTotalOptionsCount();
+
+        // Menu-related methods
+        List<Menu> SearchMenus(string search, int page, int pageSize);
+        int GetTotalMenusCount(string search);
+        IEnumerable<Menu> GetPaginatedMenus(int page, int pageSize);
+        int GetTotalMenusCount();
+
+        // UserAccess-related methods
+        List<UserAccessView> SearchUserAccesses(string search, int page, int pageSize);
+        int GetTotalUserAccessesCount(string search);
+        IEnumerable<UserAccessView> GetPaginatedUserAccesses(int page, int pageSize);
+        int GetTotalUserAccessesCount();
+
+        //setting menu
+        Task<List<Menu>> GetActiveMenusAsync();
+
     }
 
 }
